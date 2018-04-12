@@ -559,7 +559,8 @@ module ActiveRecord
           preloader = nil
           preload.each do |associations|
             preloader ||= build_preloader
-            preloader.preload @records, associations
+            preload_scope = extract_scope_option(associations)
+            preloader.preload @records, associations, preload_scope
           end
 
           @records.each(&:readonly!) if readonly_value
@@ -605,6 +606,12 @@ module ActiveRecord
         # always convert table names to downcase as in Oracle quoted table names are in uppercase
         # ignore raw_sql_ that is used by Oracle adapter as alias for limit/offset subqueries
         string.scan(/([a-zA-Z_][.\w]+).?\./).flatten.map(&:downcase).uniq - ["raw_sql_"]
+      end
+
+      def extract_scope_option(values)
+        if values.last.instance_of?(Hash) && values.last[:scope].is_a?(ActiveRecord::Relation)
+          values.pop[:scope]
+        end
       end
   end
 end

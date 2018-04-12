@@ -120,7 +120,7 @@ module ActiveRecord
       args.reject!(&:blank?)
       args.flatten!
 
-      self.includes_values |= args
+      self.includes_values |= [args]
       self
     end
 
@@ -150,7 +150,7 @@ module ActiveRecord
     end
 
     def preload!(*args) # :nodoc:
-      self.preload_values += args
+      self.preload_values += [args]
       self
     end
 
